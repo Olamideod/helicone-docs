@@ -1,5 +1,6 @@
 {
-  "name": "Helicone Docs",
+  "$schema": "https://mintlify.com/schema.json",
+  "name": "Helicone",
   "logo": {
     "light": "/logo/light.svg",
     "dark": "/logo/dark.svg"
@@ -8,11 +9,33 @@
   "colors": {
     "primary": "#0CA5E9",
     "light": "#38BDF8",
-    "dark": "#0284C7"
+    "dark": "#0284C7",
+    "background": {
+      "dark": "#0F172A"
+    }
   },
-  "topbar": {
-    "style": "default"
+  "topbarLinks": [
+    {
+      "name": "GitHub",
+      "url": "https://github.com/Helicone/helicone"
+    }
+  ],
+  "topbarCtaButton": {
+    "name": "Get started",
+    "url": "https://helicone.ai"
   },
+  "anchors": [
+    {
+      "name": "GitHub",
+      "icon": "github",
+      "url": "https://github.com/Helicone/helicone"
+    },
+    {
+      "name": "helicone.ai",
+      "icon": "globe",
+      "url": "https://helicone.ai"
+    }
+  ],
   "navigation": [
     {
       "group": "Getting Started",
