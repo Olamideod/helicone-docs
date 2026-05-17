@@ -1,0 +1,27 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "Helicone Docs",
+  "colors": {
+    "primary": "#0CA5E9",
+    "light": "#38BDF8",
+    "dark": "#0284C7"
+  },
+  "favicon": "/favicon.svg",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          { "group": "Getting Started", "pages": ["docs/intro"] },
+          { "group": "Tutorial", "pages": ["docs/tutorial/log-first-request"] },
+          { "group": "Concepts", "pages": ["docs/api-concepts/ai-gateway"] }
+        ]
+      }
+    ]
+  },
+  "footerSocials": {
+    "github": "https://github.com/Helicone/helicone",
+    "website": "https://helicone.ai"
+  }
+}
