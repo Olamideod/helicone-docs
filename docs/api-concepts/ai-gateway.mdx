@@ -1,0 +1,142 @@
+---
+title: "AI Gateway concepts"
+description: "How the Helicone AI Gateway handles authentication, model routing, and request headers."
+---
+
+# AI Gateway concepts
+
+The Helicone AI Gateway is the core of how Helicone works. This page explains what the gateway is, how it handles authentication and model routing, and how to extend its behaviour using request headers.
+
+---
+
+## What the AI Gateway is
+
+The AI Gateway is a proxy that sits between your application and your LLM provider. Instead of sending requests directly to OpenAI, Anthropic, or another provider, you send them to the Helicone gateway. The gateway forwards each request to the provider, receives the response, logs the exchange, and returns the response to your application.
+
+```
+Your Application
+      |
+      ↓
+Helicone AI Gateway   ←── logs request + response
+      |
+      ↓
+LLM Provider (OpenAI, Anthropic, Google, etc.)
+      |
+      ↓
+Helicone AI Gateway
+      |
+      ↓
+Your Application (receives response as normal)
+```
+
+From your application's perspective, the only change is the `baseURL`. The response format is identical to what the provider would return directly.
+
+---
+
+## Authentication
+
+The Helicone AI Gateway uses your Helicone API key as the primary credential. You pass it as the `apiKey` when initializing the OpenAI client, or as the `Authorization` header in a raw HTTP request.
+
+<CodeGroup>
+  ```javascript OpenAI SDK
+  import OpenAI from "openai";
+
+  const client = new OpenAI({
+    baseURL: "https://ai-gateway.helicone.ai",
+    apiKey: process.env.HELICONE_API_KEY,
+  });
+  ```
+
+  ```bash cURL
+  curl https://ai-gateway.helicone.ai/chat/completions \
+    -H "Authorization: Bearer $HELICONE_API_KEY" \
+    -H "Content-Type: application/json" \
+    -d '{
+      "model": "gpt-4o-mini",
+      "messages": [{ "role": "user", "content": "Hello" }]
+    }'
+  ```
+</CodeGroup>
+
+The gateway authenticates your request using the Helicone key and handles provider authentication on your behalf through the Helicone credit system. You do not pass your OpenAI or Anthropic key in requests.
+
+---
+
+## Model routing
+
+The AI Gateway supports 100+ models across multiple providers. You select the model by name in the request body. The gateway identifies the provider from the model name and routes the request accordingly.
+
+| Model name | Routes to |
+|---|---|
+| `gpt-4o-mini` | OpenAI |
+| `gpt-4o` | OpenAI |
+| `claude-sonnet-4` | Anthropic |
+| `gemini-2.0-flash` | Google |
+| `llama-3.1-70b` | Meta via supported provider |
+
+You switch between providers by changing the model string. No other code changes are required.
+
+---
+
+## Request headers
+
+Helicone extends the standard OpenAI request format with optional headers. You pass these headers in the `defaultHeaders` field of the client config or in the HTTP request directly. They control gateway behaviour without affecting the request sent to the LLM provider.
+
+### Common headers
+
+| Header | Value | What it does |
+|---|---|---|
+| `Helicone-Cache-Enabled` | `"true"` | Caches the response for identical future requests |
+| `Helicone-Property-{key}` | Any string | Attaches a custom label to the request for filtering in the dashboard |
+| `Helicone-User-Id` | Any string | Tags the request with a user identifier for per-user analytics |
+| `Helicone-Session-Id` | Any string | Groups requests into a named session for tracing multi-step workflows |
+| `Helicone-Prompt-Id` | Any string | Links the request to a managed prompt version in Prompt Management |
+
+### Example: Adding custom properties
+
+```javascript
+const client = new OpenAI({
+  baseURL: "https://ai-gateway.helicone.ai",
+  apiKey: process.env.HELICONE_API_KEY,
+  defaultHeaders: {
+    "Helicone-Property-Environment": "production",
+    "Helicone-Property-Feature": "search",
+    "Helicone-User-Id": "user_abc123",
+  },
+});
+```
+
+In the dashboard, you can filter all requests by `Environment: production` or `Feature: search` to isolate costs and latency for specific parts of your application.
+
+---
+
+## Caching
+
+When caching is enabled, the gateway stores the response for a given prompt and model. Subsequent identical requests are served from the cache and do not reach the provider. The response is returned in the same format.
+
+```javascript
+const client = new OpenAI({
+  baseURL: "https://ai-gateway.helicone.ai",
+  apiKey: process.env.HELICONE_API_KEY,
+  defaultHeaders: {
+    "Helicone-Cache-Enabled": "true",
+  },
+});
+```
+
+<Note>
+  Caching is useful for fixed-prompt features like classification tasks, label generation, or any use case where the same prompt is sent repeatedly.
+</Note>
+
+---
+
+## What is next
+
+<CardGroup cols={2}>
+  <Card title="Log your first request" icon="play" href="/docs/tutorial/log-first-request">
+    Follow the tutorial to send your first logged request through the gateway.
+  </Card>
+  <Card title="Header Directory" icon="list" href="https://docs.helicone.ai/helicone-headers/header-directory">
+    See the full list of supported Helicone request headers.
+  </Card>
+</CardGroup>

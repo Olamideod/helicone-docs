@@ -1,0 +1,54 @@
+---
+title: "Overview"
+description: "Helicone is an open-source LLM observability platform. It logs every request automatically and gives you cost tracking, latency metrics, prompt management, and session tracing."
+---
+
+# Helicone Documentation
+
+Helicone is an open-source LLM observability platform. It sits between your application and your LLM provider, logging every request automatically. You get cost tracking, latency metrics, prompt management, and session tracing without changing your application logic.
+
+## How it works
+
+When you route requests through the Helicone AI Gateway, every call is intercepted, logged, and forwarded to your LLM provider. The response returns to your application as normal. From your code's perspective, nothing changes except the `baseURL`.
+
+```
+Your App  →  Helicone AI Gateway  →  LLM Provider (OpenAI, Anthropic, etc.)
+                     ↓
+              Dashboard Logs
+```
+
+## Key capabilities
+
+<CardGroup cols={2}>
+  <Card title="Observability" icon="eye">
+    Every request is logged with token count, cost, latency, model, prompt, and response. Search and filter across all requests in the dashboard.
+  </Card>
+  <Card title="Cost tracking" icon="chart-line">
+    See exactly what each model, user, or feature costs. Break down spend by custom properties you define.
+  </Card>
+  <Card title="Prompt management" icon="pen-to-square">
+    Version your prompts and deploy changes through the gateway without redeploying your application.
+  </Card>
+  <Card title="Caching" icon="bolt">
+    Cache identical requests and serve responses instantly. Reduce repeated costs with a single header.
+  </Card>
+</CardGroup>
+
+## Who this documentation is for
+
+This documentation is for developers integrating Helicone into a Node.js or Python application. It assumes basic familiarity with API calls and environment variables.
+
+## In this documentation
+
+<CardGroup cols={2}>
+  <Card title="Tutorial: Log your first request" icon="play" href="/docs/tutorial/log-first-request">
+    Set up the Helicone AI Gateway and send a logged request in under 10 minutes.
+  </Card>
+  <Card title="AI Gateway concepts" icon="book" href="/docs/api-concepts/ai-gateway">
+    How the gateway handles authentication, model routing, and request headers.
+  </Card>
+</CardGroup>
+
+## Get started
+
+Sign up for free at [helicone.ai](https://helicone.ai). The free tier includes 10,000 requests per month with no credit card required.

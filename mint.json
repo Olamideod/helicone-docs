@@ -1,0 +1,34 @@
+{
+  "name": "Helicone Docs",
+  "logo": {
+    "light": "/logo/light.svg",
+    "dark": "/logo/dark.svg"
+  },
+  "favicon": "/favicon.svg",
+  "colors": {
+    "primary": "#0CA5E9",
+    "light": "#38BDF8",
+    "dark": "#0284C7"
+  },
+  "topbar": {
+    "style": "default"
+  },
+  "navigation": [
+    {
+      "group": "Getting Started",
+      "pages": ["docs/intro"]
+    },
+    {
+      "group": "Tutorial",
+      "pages": ["docs/tutorial/log-first-request"]
+    },
+    {
+      "group": "Concepts",
+      "pages": ["docs/api-concepts/ai-gateway"]
+    }
+  ],
+  "footerSocials": {
+    "github": "https://github.com/Helicone/helicone",
+    "website": "https://helicone.ai"
+  }
+}

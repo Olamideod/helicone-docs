@@ -1,0 +1,166 @@
+---
+title: "Log your first request"
+description: "Route your first OpenAI API call through the Helicone AI Gateway and view the log in the dashboard."
+---
+
+# Log your first LLM request with Helicone
+
+Helicone is an open-source LLM observability platform. It sits between your application and your LLM provider and logs every request automatically. This tutorial shows you how to route your first OpenAI API call through the Helicone AI Gateway and view the log in the dashboard.
+
+By the end, you will have a working Node.js script that sends a chat completion request through Helicone and a live log entry visible in your Helicone dashboard.
+
+---
+
+## Prerequisites
+
+Before you start, make sure you have:
+
+- **Node.js v20.6 or higher** installed. Run `node -v` to check.
+- **A Helicone account and API key.** Sign up at [helicone.ai](https://helicone.ai). Your API key is on the dashboard after sign-up. No credit card is required for the free tier (10,000 requests per month).
+- Basic familiarity with running commands in a terminal.
+
+<Note>
+  The Helicone AI Gateway manages LLM provider access through its own credit system. You do not need a separate OpenAI API key to follow this tutorial. Add credits to your Helicone account at [helicone.ai/credits](https://helicone.ai/credits) and Helicone handles provider billing for you.
+</Note>
+
+---
+
+## Step 1: Create your project
+
+Create a new folder and initialize a Node.js project.
+
+```bash
+mkdir helicone-tutorial
+cd helicone-tutorial
+npm init -y
+```
+
+**Expected output:**
+
+```bash
+Wrote to /helicone-tutorial/package.json
+```
+
+---
+
+## Step 2: Install the OpenAI SDK
+
+Helicone's AI Gateway is OpenAI-compatible. You use the standard OpenAI SDK — no separate Helicone package is needed.
+
+```bash
+npm install openai
+```
+
+**Expected output:**
+
+```bash
+added 8 packages in 2s
+```
+
+---
+
+## Step 3: Store your API key
+
+Create a `.env` file in your project root.
+
+```bash
+touch .env
+```
+
+Open `.env` and add your Helicone API key:
+
+```bash
+HELICONE_API_KEY=your-helicone-api-key
+```
+
+Replace `your-helicone-api-key` with the key from your Helicone dashboard. Never commit this file to version control.
+
+---
+
+## Step 4: Write the script
+
+Create a file called `index.mjs` and add the following code:
+
+```javascript
+import OpenAI from "openai";
+
+// Point the OpenAI client to the Helicone AI Gateway.
+// Helicone forwards the request to the LLM provider and logs it automatically.
+const client = new OpenAI({
+  baseURL: "https://ai-gateway.helicone.ai",
+  apiKey: process.env.HELICONE_API_KEY,
+});
+
+const response = await client.chat.completions.create({
+  model: "gpt-4o-mini",
+  messages: [{ role: "user", content: "What is LLM observability?" }],
+});
+
+console.log(response.choices[0].message.content);
+```
+
+---
+
+## Step 5: Run the script
+
+```bash
+node --env-file=.env index.mjs
+```
+
+**Expected output:**
+
+```
+LLM observability refers to the ability to monitor, trace, and analyze
+the behavior of large language models in production. It includes tracking
+metrics like cost, latency, and response quality across requests.
+```
+
+The exact wording will vary. The key signal is that you receive a text response in the terminal.
+
+---
+
+## Step 6: View your log in the Helicone dashboard
+
+Open [helicone.ai](https://helicone.ai) and go to the **Requests** tab. Your request will appear within seconds with the following details:
+
+- Model used (`gpt-4o-mini`)
+- Prompt and response content
+- Token count and estimated cost
+- Latency in milliseconds
+- Timestamp
+
+Every future request through this client logs automatically.
+
+---
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Error: 401 Unauthorized">
+    **Cause:** Your Helicone API key is missing or formatted incorrectly.
+
+    **Fix:** Check that `HELICONE_API_KEY` in your `.env` file matches the key from your Helicone dashboard exactly. Confirm the `--env-file=.env` flag is included in your run command. If the key was just generated, wait 10 seconds and try again.
+  </Accordion>
+
+  <Accordion title="Error: Request not appearing in the dashboard">
+    **Cause:** The `baseURL` is pointing somewhere other than the Helicone AI Gateway.
+
+    **Fix:** Confirm the `baseURL` in your client is set to `https://ai-gateway.helicone.ai`. If you copied code from older Helicone documentation, you may have `https://oai.hconeai.com/v1`, which is the legacy proxy URL and routes differently from the current AI Gateway.
+  </Accordion>
+
+  <Accordion title="Error: Model not found or unsupported model">
+    **Cause:** The model name passed to the gateway does not match a supported identifier.
+
+    **Fix:** Confirm you are using a valid model name. Common options include `gpt-4o-mini`, `gpt-4o`, and `claude-sonnet-4`. A full list of supported models is available at [helicone.ai/models](https://helicone.ai/models). Do not include provider prefixes like `openai/gpt-4o` when using the OpenAI SDK client.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## What is next
+
+Now that your requests are logging, you can:
+
+- Add `Helicone-Property-User-Id` to track requests per user
+- Enable caching with `Helicone-Cache-Enabled: "true"` to reduce repeated costs
+- View cost and latency trends across requests in the **Analytics** tab
